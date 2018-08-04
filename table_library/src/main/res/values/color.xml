@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="statistics_table_border">#e0e0e0</color>
+    <color name="statistics_table_divide">#cccccc</color>
+    <color name="statistics_table_title">#333333</color>
+    <color name="statistics_interspace">#aa888888</color>
+</resources>

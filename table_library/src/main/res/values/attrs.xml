@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="expand_height_list_view">
+        <attr name="max_width" format="dimension" />
+    </declare-styleable>
+
+    <declare-styleable name="table_layout">
+        <attr name="height" format="dimension" />
+        <attr name="text_size" format="dimension" />
+        <attr name="table_item_margin" format="dimension" />
+        <attr name="table_item_height" format="dimension" />
+        <attr name="table_item_color" format="color" />
+    </declare-styleable>
+</resources>
