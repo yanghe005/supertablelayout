@@ -9,7 +9,7 @@
         <attr name="height" format="dimension" />
         <attr name="text_size" format="dimension" />
         <attr name="table_header_fixed" format="boolean" />
-        <attr name="item_margin" format="dimension" />
+        <attr name="item_left_right_margin" format="dimension" />
         <attr name="item_height" format="dimension" />
         <attr name="item_bg_pure_color" format="color" />
         <attr name="item_bg_interval_color1" format="color" />

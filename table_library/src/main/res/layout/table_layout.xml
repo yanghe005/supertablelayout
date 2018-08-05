@@ -5,8 +5,8 @@
     <View
         android:id="@+id/v_table_title_divide"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/statistics_table_border_line_width"
-        android:background="@color/statistics_table_border"/>
+        android:layout_height="@dimen/table_border_line_width"
+        android:background="@color/table_border"/>
 
     <!-- 第一排 -->
     <LinearLayout
@@ -16,23 +16,23 @@
         android:orientation="horizontal">
 
         <View
-            android:layout_width="@dimen/statistics_table_border_line_width"
+            android:layout_width="@dimen/table_border_line_width"
             android:layout_height="match_parent"
-            android:background="@color/statistics_table_border"/>
+            android:background="@color/table_border"/>
 
         <!-- 第一排第一列内容 -->
         <TextView
             android:id="@+id/tv_table_title"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:textSize="@dimen/statistics_table_item_text_size"
-            android:textColor="@color/statistics_table_title"
+            android:textSize="@dimen/table_item_text_size"
+            android:textColor="@color/table_title"
             tools:text="商品"/>
 
         <View
-            android:layout_width="@dimen/statistics_table_divide_line_width"
+            android:layout_width="@dimen/table_divide_line_width"
             android:layout_height="match_parent"
-            android:background="@color/statistics_table_divide"/>
+            android:background="@color/table_divide"/>
 
         <!-- 第一排第一列右侧内容 -->
         <com.hepeng.view.SyncHorizontalScrollView
@@ -49,15 +49,15 @@
         </com.hepeng.view.SyncHorizontalScrollView>
 
         <View
-            android:layout_width="@dimen/statistics_table_border_line_width"
+            android:layout_width="@dimen/table_border_line_width"
             android:layout_height="match_parent"
-            android:background="@color/statistics_table_border"/>
+            android:background="@color/table_border"/>
     </LinearLayout>
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/statistics_table_divide_line_width"
-        android:background="@color/statistics_table_divide"/>
+        android:layout_height="@dimen/table_divide_line_width"
+        android:background="@color/table_divide"/>
 
 
     <!-- 第一排往下部分 -->
@@ -73,9 +73,9 @@
             android:orientation="horizontal">
 
             <View
-                android:layout_width="@dimen/statistics_table_border_line_width"
+                android:layout_width="@dimen/table_border_line_width"
                 android:layout_height="match_parent"
-                android:background="@color/statistics_table_border"/>
+                android:background="@color/table_border"/>
 
             <!-- 第一排往下第一列内容 -->
             <com.hepeng.view.TableListView
@@ -83,16 +83,16 @@
                 android:id="@+id/lv_table_row_header_container"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:max_width="@dimen/statistics_table_item_max_width"
-                android:divider="@color/statistics_table_divide"
-                android:dividerHeight="@dimen/statistics_table_divide_line_width"
+                app:max_width="@dimen/table_item_max_width"
+                android:divider="@color/table_divide"
+                android:dividerHeight="@dimen/table_divide_line_width"
                 android:scrollbars="none">
             </com.hepeng.view.TableListView>
 
             <View
-                android:layout_width="@dimen/statistics_table_divide_line_width"
+                android:layout_width="@dimen/table_divide_line_width"
                 android:layout_height="match_parent"
-                android:background="@color/statistics_table_divide"/>
+                android:background="@color/table_divide"/>
 
             <!-- 第一排往下第一列右侧内容 -->
             <com.hepeng.view.SyncHorizontalScrollView
@@ -106,8 +106,8 @@
                     android:id="@+id/lv_table_content_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:divider="@color/statistics_table_divide"
-                    android:dividerHeight="@dimen/statistics_table_divide_line_width"
+                    android:divider="@color/table_divide"
+                    android:dividerHeight="@dimen/table_divide_line_width"
                     android:scrollbars="none">
                 </com.hepeng.view.TableListView>
             </com.hepeng.view.SyncHorizontalScrollView>
@@ -116,6 +116,6 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/statistics_table_border_line_width"
-        android:background="@color/statistics_table_border"/>
+        android:layout_height="@dimen/table_border_line_width"
+        android:background="@color/table_border"/>
 </merge>

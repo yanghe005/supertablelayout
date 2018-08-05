@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="statistics_table_item_max_width">70dp</dimen>
-    <dimen name="statistics_table_item_default_height">26dp</dimen>
-    <dimen name="statistics_table_divide_line_width">1px</dimen>
-    <dimen name="statistics_table_border_line_width">1px</dimen>
-    <dimen name="statistics_table_item_text_size">15sp</dimen>
-    <dimen name="statistics_table_item_margin">13dp</dimen>
-    <dimen name="statistics_label_layout_height">48dp</dimen>
-    <dimen name="statistics_user_info_layout_height">54dp</dimen>
+    <dimen name="table_item_max_width">70dp</dimen>
+    <dimen name="table_item_default_height">26dp</dimen>
+    <dimen name="table_divide_line_width">1px</dimen>
+    <dimen name="table_border_line_width">1px</dimen>
+    <dimen name="table_item_text_size">15sp</dimen>
+    <dimen name="table_item_margin">13dp</dimen>
 </resources>

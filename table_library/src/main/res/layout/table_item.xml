@@ -6,7 +6,7 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:textColor="@color/statistics_table_title"
+    android:textColor="@color/table_title"
     android:singleLine="true"
     android:ellipsize="end"
     tools:text="横标题"/>

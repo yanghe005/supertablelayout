@@ -47,7 +47,7 @@ public class SuperTableLayout extends LinearLayout {
 
     private float textSize;
     private int itemHeight;
-    private int itemMargin;
+    private int itemLeftRightMargin;
     private int itemBgIntervalColor1, itemBgIntervalColor2;
     private int itemBgPureColor;
     private int width, height;
@@ -89,27 +89,27 @@ public class SuperTableLayout extends LinearLayout {
 
             textSize = ta.getDimension(R.styleable.table_layout_text_size, 0);
             if (textSize == 0) {
-                textSize = (int) getResources().getDimension(R.dimen.statistics_table_item_text_size);
+                textSize = (int) getResources().getDimension(R.dimen.table_item_text_size);
             }
 
-            itemMargin = (int) ta.getDimension(R.styleable.table_layout_item_margin, 0);
-            if (itemMargin == 0) {
-                itemMargin = (int) getResources().getDimension(R.dimen.statistics_table_item_margin);
+            itemLeftRightMargin = (int) ta.getDimension(R.styleable.table_layout_item_left_right_margin, 0);
+            if (itemLeftRightMargin == 0) {
+                itemLeftRightMargin = (int) getResources().getDimension(R.dimen.table_item_margin);
             }
 
             itemHeight = (int) ta.getDimension(R.styleable.table_layout_item_height, 0);
             if (itemHeight == 0) {
-                itemHeight = (int) getResources().getDimension(R.dimen.statistics_table_item_default_height);
+                itemHeight = (int) getResources().getDimension(R.dimen.table_item_default_height);
             }
 
             itemBgPureColor = (int) ta.getColor(R.styleable.table_layout_item_bg_pure_color, 0);
 
 
-            itemBgIntervalColor1 = (int)  ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
+            itemBgIntervalColor1 = (int) ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
             if (itemBgIntervalColor1 == 0) {
                 itemBgIntervalColor1 = Color.WHITE;
             }
-            itemBgIntervalColor2 = (int)  ta.getColor(R.styleable.table_layout_item_bg_interval_color2, 0);
+            itemBgIntervalColor2 = (int) ta.getColor(R.styleable.table_layout_item_bg_interval_color2, 0);
             if (itemBgIntervalColor2 == 0) {
                 itemBgIntervalColor2 = Color.parseColor("#fff6f6f6");
             }
@@ -151,7 +151,6 @@ public class SuperTableLayout extends LinearLayout {
     }
 
     /**
-     *
      * @param tableContent 最外层list是表格有几行数据，内层list是每行有多少数据
      */
     public void addData(final List<List<String>> tableContent) {
@@ -185,7 +184,7 @@ public class SuperTableLayout extends LinearLayout {
                 tvTableTitle.setSingleLine();
                 tvTableTitle.setEllipsize(TextUtils.TruncateAt.END);
                 tvTableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-                tvTableTitle.setTextColor(getResources().getColor(R.color.statistics_table_title));
+                tvTableTitle.setTextColor(getResources().getColor(R.color.table_title));
                 tvTableTitle.setBackgroundColor(tableRowColor(0));
                 String itemName = cacheTableContent.get(0).get(i);
                 if (!TextUtils.isEmpty(itemName)) {
@@ -198,10 +197,10 @@ public class SuperTableLayout extends LinearLayout {
 
                 int lineColor, lineWidth;
                 if (i == cacheTableContent.get(0).size() - 1) {
-                    lineColor = getResources().getColor(R.color.statistics_table_border);
+                    lineColor = getResources().getColor(R.color.table_border);
                     lineWidth = 1;
                 } else {
-                    lineColor = getResources().getColor(R.color.statistics_table_divide);
+                    lineColor = getResources().getColor(R.color.table_divide);
                     lineWidth = DensityUtils.dp2px(getContext(), 1);
                 }
                 View tableTitleEndLine = new View(getContext());
@@ -246,7 +245,6 @@ public class SuperTableLayout extends LinearLayout {
         }
 
 
-
         if (!tableHeaderFixed) {
             start = 0;
         }
@@ -270,7 +268,7 @@ public class SuperTableLayout extends LinearLayout {
                     tvTableContent.setId(i);
                     tvTableContent.setGravity(Gravity.CENTER);
                     tvTableContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-                    tvTableContent.setTextColor(getResources().getColor(R.color.statistics_table_title));
+                    tvTableContent.setTextColor(getResources().getColor(R.color.table_title));
                     tvTableContent.setSingleLine();
                     tvTableContent.setEllipsize(TextUtils.TruncateAt.END);
 
@@ -281,10 +279,10 @@ public class SuperTableLayout extends LinearLayout {
 
                     int lineColor, lineWidth;
                     if (i == size - 1) {
-                        lineColor = getResources().getColor(R.color.statistics_table_border);
+                        lineColor = getResources().getColor(R.color.table_border);
                         lineWidth = 1;
                     } else {
-                        lineColor = getResources().getColor(R.color.statistics_table_divide);
+                        lineColor = getResources().getColor(R.color.table_divide);
                         lineWidth = DensityUtils.dp2px(getContext(), 1);
                     }
                     View tvTableContentEndLine = new View(context);
@@ -324,16 +322,13 @@ public class SuperTableLayout extends LinearLayout {
         tableContentContainerAdapter.addItemData(list, true);
 
 
-
-
-
         // 以下设置表格宽度为真实宽度
         Utils.getViewSize(TAG, tableContentContainer, new Utils.MeasureViewSizeCallback() {
 
             @Override
             public void sizeCallback(int width, int height) {
                 ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                layoutParams.width = (int) (width + itemWidth + getResources().getDimension(R.dimen.statistics_table_divide_line_width) + getResources().getDimension(R.dimen.statistics_table_border_line_width));
+                layoutParams.width = (int) (width + itemWidth + getResources().getDimension(R.dimen.table_divide_line_width) + getResources().getDimension(R.dimen.table_border_line_width));
                 setLayoutParams(layoutParams);
             }
         });
@@ -363,7 +358,7 @@ public class SuperTableLayout extends LinearLayout {
      * 返回每一列字符数据中最大宽度
      *
      * @param tableContent
-     * @param listNo      列号，第一列从0开始
+     * @param listNo       列号，第一列从0开始
      * @return 单位px
      */
     private int getListTextMaxWidth(List<List<String>> tableContent, float textSize, int listNo) {
@@ -392,7 +387,7 @@ public class SuperTableLayout extends LinearLayout {
             }
         }
 
-        return listMaxTextWidth + itemMargin;
+        return listMaxTextWidth + itemLeftRightMargin;
     }
 
     private boolean tableContentQualified(List<List<String>> tableContent) {
@@ -419,7 +414,6 @@ public class SuperTableLayout extends LinearLayout {
     }
 
     /**
-     *
      * @param textSize px作为参数
      */
     public void setTextSize(float textSize) {
@@ -435,7 +429,7 @@ public class SuperTableLayout extends LinearLayout {
     }
 
     public void setItemMargin(int tableItemMargin) {
-        this.itemMargin = tableItemMargin;
+        this.itemLeftRightMargin = tableItemMargin;
 
         addData(null);
     }

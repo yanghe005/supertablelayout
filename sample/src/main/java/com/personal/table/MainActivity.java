@@ -61,13 +61,13 @@ public class MainActivity extends Activity {
         tableLayout.addData(list);
 
 
-        Button button = findViewById(R.id.table_test);
-        button.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                tableLayout.setItemMargin(100);
-            }
-        });
+//        Button button = findViewById(R.id.table_test);
+//        button.setOnClickListener(new View.OnClickListener() {
+//
+//            @Override
+//            public void onClick(View v) {
+//                tableLayout.setItemMargin(100);
+//            }
+//        });
     }
 }
