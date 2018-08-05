@@ -46,12 +46,13 @@ public class SuperTableLayout extends LinearLayout {
     private List<List<String>> cacheTableContent;
 
     private float textSize;
-    private int itemHeight;
+    private int itemWidth, itemHeight;
     private int itemLeftRightMargin;
     private int itemBgIntervalColor1, itemBgIntervalColor2;
     private int itemBgPureColor;
     private int width, height;
     private boolean tableHeaderFixed;
+    private TextUtils.TruncateAt itemTextEllipsize = TextUtils.TruncateAt.END;
 
 
     private int start = 1;
@@ -97,6 +98,7 @@ public class SuperTableLayout extends LinearLayout {
                 itemLeftRightMargin = (int) getResources().getDimension(R.dimen.table_item_margin);
             }
 
+            itemWidth = (int) ta.getDimension(R.styleable.table_layout_item_width, 0);
             itemHeight = (int) ta.getDimension(R.styleable.table_layout_item_height, 0);
             if (itemHeight == 0) {
                 itemHeight = (int) getResources().getDimension(R.dimen.table_item_default_height);
@@ -104,6 +106,23 @@ public class SuperTableLayout extends LinearLayout {
 
             itemBgPureColor = (int) ta.getColor(R.styleable.table_layout_item_bg_pure_color, 0);
 
+            String textEllipsize = ta.getString(R.styleable.table_layout_item_text_ellipsize);
+            switch (textEllipsize) {
+                case "start":
+                    itemTextEllipsize = TextUtils.TruncateAt.START;
+                    break;
+                case "middle":
+                    itemTextEllipsize = TextUtils.TruncateAt.MIDDLE;
+                    break;
+                case "end":
+                    itemTextEllipsize = TextUtils.TruncateAt.END;
+                    break;
+                case "marquee":
+                    itemTextEllipsize = TextUtils.TruncateAt.MARQUEE;
+                    break;
+                    default:
+                        break;
+            }
 
             itemBgIntervalColor1 = (int) ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
             if (itemBgIntervalColor1 == 0) {
@@ -171,7 +190,7 @@ public class SuperTableLayout extends LinearLayout {
             tableTitle.setText(cacheTableContent.get(0).get(0));
             tableTitle.setSingleLine();
             tableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-            tableTitle.setEllipsize(TextUtils.TruncateAt.END);
+            tableTitle.setEllipsize(itemTextEllipsize);
             tableTitle.setBackgroundColor(tableRowColor(0));
             tableTitle.setLayoutParams(new LinearLayout.LayoutParams(itemWidth, LinearLayout.LayoutParams.MATCH_PARENT));
 
@@ -182,7 +201,7 @@ public class SuperTableLayout extends LinearLayout {
                 TextView tvTableTitle = new TextView(getContext());
                 tvTableTitle.setGravity(Gravity.CENTER);
                 tvTableTitle.setSingleLine();
-                tvTableTitle.setEllipsize(TextUtils.TruncateAt.END);
+                tvTableTitle.setEllipsize(itemTextEllipsize);
                 tvTableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
                 tvTableTitle.setTextColor(getResources().getColor(R.color.table_title));
                 tvTableTitle.setBackgroundColor(tableRowColor(0));
@@ -221,6 +240,7 @@ public class SuperTableLayout extends LinearLayout {
                 public void convert(Context context, TableListViewHolder helper, String item, int pos) {
                     TextView tableTitleItem = helper.getView(R.id.tv_table_title_item);
                     tableTitleItem.setGravity(Gravity.CENTER);
+                    tableTitleItem.setEllipsize(itemTextEllipsize);
                     tableTitleItem.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
                     if (!TextUtils.isEmpty(item)) {
                         tableTitleItem.setText(item);
@@ -270,7 +290,7 @@ public class SuperTableLayout extends LinearLayout {
                     tvTableContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
                     tvTableContent.setTextColor(getResources().getColor(R.color.table_title));
                     tvTableContent.setSingleLine();
-                    tvTableContent.setEllipsize(TextUtils.TruncateAt.END);
+                    tvTableContent.setEllipsize(itemTextEllipsize);
 
                     LinearLayout.LayoutParams tvTableContentParams = new LinearLayout.LayoutParams(getListTextMaxWidth(cacheTableContent, SuperTableLayout.this.textSize, i), LinearLayout.LayoutParams.MATCH_PARENT);
                     tvTableContentParams.gravity = Gravity.CENTER;
@@ -362,32 +382,36 @@ public class SuperTableLayout extends LinearLayout {
      * @return 单位px
      */
     private int getListTextMaxWidth(List<List<String>> tableContent, float textSize, int listNo) {
-        List<String> listTexts = new ArrayList<>();
-        for (List<String> rowData : tableContent) {
-            // 每行有多少数据
-            if (listNo >= rowData.size()) {
-                continue;
+        if (itemWidth == 0) {
+            List<String> listTexts = new ArrayList<>();
+            for (List<String> rowData : tableContent) {
+                // 每行有多少数据
+                if (listNo >= rowData.size()) {
+                    continue;
+                }
+
+                listTexts.add(rowData.get(listNo));
             }
 
-            listTexts.add(rowData.get(listNo));
-        }
-
-        if (listTexts.size() <= 0) {
-            return 0;
-        }
-
-        int listMaxTextWidth = 0;
-        for (int i = 0; i < listTexts.size(); i++) {
-            String text = listTexts.get(i);
-
-            int textWidth = Utils.measureTextWidth(text, textSize);
-
-            if (textWidth > listMaxTextWidth) {
-                listMaxTextWidth = textWidth;
+            if (listTexts.size() <= 0) {
+                return 0;
             }
-        }
 
-        return listMaxTextWidth + itemLeftRightMargin;
+            int listMaxTextWidth = 0;
+            for (int i = 0; i < listTexts.size(); i++) {
+                String text = listTexts.get(i);
+
+                int textWidth = Utils.measureTextWidth(text, textSize);
+
+                if (textWidth > listMaxTextWidth) {
+                    listMaxTextWidth = textWidth;
+                }
+            }
+
+            return listMaxTextWidth + itemLeftRightMargin;
+        } else {
+            return itemWidth;
+        }
     }
 
     private boolean tableContentQualified(List<List<String>> tableContent) {
