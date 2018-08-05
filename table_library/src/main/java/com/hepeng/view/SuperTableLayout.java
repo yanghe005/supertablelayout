@@ -107,21 +107,23 @@ public class SuperTableLayout extends LinearLayout {
             itemBgPureColor = (int) ta.getColor(R.styleable.table_layout_item_bg_pure_color, 0);
 
             String textEllipsize = ta.getString(R.styleable.table_layout_item_text_ellipsize);
-            switch (textEllipsize) {
-                case "start":
-                    itemTextEllipsize = TextUtils.TruncateAt.START;
-                    break;
-                case "middle":
-                    itemTextEllipsize = TextUtils.TruncateAt.MIDDLE;
-                    break;
-                case "end":
-                    itemTextEllipsize = TextUtils.TruncateAt.END;
-                    break;
-                case "marquee":
-                    itemTextEllipsize = TextUtils.TruncateAt.MARQUEE;
-                    break;
+            if (!TextUtils.isEmpty(textEllipsize)) {
+                switch (textEllipsize) {
+                    case "start":
+                        itemTextEllipsize = TextUtils.TruncateAt.START;
+                        break;
+                    case "middle":
+                        itemTextEllipsize = TextUtils.TruncateAt.MIDDLE;
+                        break;
+                    case "end":
+                        itemTextEllipsize = TextUtils.TruncateAt.END;
+                        break;
+                    case "marquee":
+                        itemTextEllipsize = TextUtils.TruncateAt.MARQUEE;
+                        break;
                     default:
                         break;
+                }
             }
 
             itemBgIntervalColor1 = (int) ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
