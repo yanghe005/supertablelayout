@@ -9,6 +9,12 @@
         android:id="@+id/table_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:table_item_height="50dp"
+        app:item_height="50dp"
         app:text_size="20sp"/>
+
+    <Button
+        android:id="@+id/table_test"
+        android:layout_width="60dp"
+        android:layout_height="40dp"
+        android:text="测试"/>
 </LinearLayout>

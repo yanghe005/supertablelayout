@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/supertablelayout.iml" filepath="$PROJECT_DIR$/supertablelayout.iml" />
+      <module fileurl="file://$PROJECT_DIR$/supertablelayout.iml" filepath="$PROJECT_DIR$/supertablelayout.iml" />
+      <module fileurl="file://$PROJECT_DIR$/table_library/table_library.iml" filepath="$PROJECT_DIR$/table_library/table_library.iml" />
       <module fileurl="file://$PROJECT_DIR$/table_library/table_library.iml" filepath="$PROJECT_DIR$/table_library/table_library.iml" />
     </modules>
   </component>

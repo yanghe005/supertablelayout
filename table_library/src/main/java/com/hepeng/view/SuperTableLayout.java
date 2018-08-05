@@ -46,9 +46,10 @@ public class SuperTableLayout extends LinearLayout {
     private List<List<String>> cacheTableContent;
 
     private float textSize;
-    private int tableItemHeight;
-    private int tableItemMargin;
-    private int tableItemColor;
+    private int itemHeight;
+    private int itemMargin;
+    private int itemBgIntervalColor1, itemBgIntervalColor2;
+    private int itemBgPureColor;
     private int height;
 
     public SuperTableLayout(Context context) {
@@ -73,7 +74,7 @@ public class SuperTableLayout extends LinearLayout {
         LayoutInflater.from(context).inflate(R.layout.table_layout, this, true);
 
         setOrientation(LinearLayout.VERTICAL);
-        setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, 20));
+        setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
         if (attrs != null) {
             TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.table_layout);
@@ -85,21 +86,27 @@ public class SuperTableLayout extends LinearLayout {
                 textSize = (int) getResources().getDimension(R.dimen.statistics_table_item_text_size);
             }
 
-            tableItemMargin = (int) ta.getDimension(R.styleable.table_layout_table_item_margin, 0);
-            if (tableItemMargin == 0) {
-                tableItemMargin = (int) getResources().getDimension(R.dimen.statistics_table_item_margin);
+            itemMargin = (int) ta.getDimension(R.styleable.table_layout_item_margin, 0);
+            if (itemMargin == 0) {
+                itemMargin = (int) getResources().getDimension(R.dimen.statistics_table_item_margin);
             }
 
-            tableItemHeight = (int) ta.getDimension(R.styleable.table_layout_table_item_height, 0);
-            if (tableItemHeight == 0) {
-                tableItemHeight = (int) getResources().getDimension(R.dimen.statistics_table_item_default_height);
+            itemHeight = (int) ta.getDimension(R.styleable.table_layout_item_height, 0);
+            if (itemHeight == 0) {
+                itemHeight = (int) getResources().getDimension(R.dimen.statistics_table_item_default_height);
             }
 
-            tableItemColor = (int)  ta.getColor(R.styleable.table_layout_table_item_color, 0);
-            if (tableItemColor == 0) {
-                tableItemColor = Color.parseColor("#fff6f6f6");
-            }
+            itemBgPureColor = (int) ta.getColor(R.styleable.table_layout_item_bg_pure_color, 0);
 
+
+            itemBgIntervalColor1 = (int)  ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
+            if (itemBgIntervalColor1 == 0) {
+                itemBgIntervalColor1 = Color.WHITE;
+            }
+            itemBgIntervalColor2 = (int)  ta.getColor(R.styleable.table_layout_item_bg_interval_color2, 0);
+            if (itemBgIntervalColor2 == 0) {
+                itemBgIntervalColor2 = Color.parseColor("#fff6f6f6");
+            }
             ta.recycle();
         }
     }
@@ -142,7 +149,7 @@ public class SuperTableLayout extends LinearLayout {
             return;
         }
 
-
+        final int itemWidth = getListTextMaxWidth(cacheTableContent, textSize, 0);
         // 第一行表头
         // 第一行表头第一个
         tableTitle.setGravity(Gravity.CENTER);
@@ -151,7 +158,7 @@ public class SuperTableLayout extends LinearLayout {
         tableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
         tableTitle.setEllipsize(TextUtils.TruncateAt.END);
         tableTitle.setBackgroundColor(tableRowColor(0));
-        tableTitle.setLayoutParams(new LinearLayout.LayoutParams(getListTextMaxWidth(cacheTableContent, textSize, 0), LinearLayout.LayoutParams.MATCH_PARENT));
+        tableTitle.setLayoutParams(new LinearLayout.LayoutParams(itemWidth, LinearLayout.LayoutParams.MATCH_PARENT));
 
 
         // 第一行表头除第一个外其他
@@ -187,7 +194,7 @@ public class SuperTableLayout extends LinearLayout {
         }
 
         LinearLayout.LayoutParams titleLayoutParams = (LinearLayout.LayoutParams) tableTitleLayout.getLayoutParams();
-        titleLayoutParams.height = tableItemHeight;
+        titleLayoutParams.height = itemHeight;
         tableTitleLayout.setLayoutParams(titleLayoutParams);
         // 第一行表头
 
@@ -208,7 +215,7 @@ public class SuperTableLayout extends LinearLayout {
 
                 AbsListView.LayoutParams tableTitleItemParams = (AbsListView.LayoutParams) tableTitleItem.getLayoutParams();
                 tableTitleItemParams.width = getListTextMaxWidth(cacheTableContent, textSize, 0);
-                tableTitleItemParams.height = tableItemHeight;
+                tableTitleItemParams.height = itemHeight;
                 tableTitleItem.setLayoutParams(tableTitleItemParams);
             }
         };
@@ -233,7 +240,7 @@ public class SuperTableLayout extends LinearLayout {
                 int realRowPosition = position + 1;
 
                 LinearLayout linearLayout = new LinearLayout(context);
-                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, tableItemHeight));
+                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, itemHeight));
                 linearLayout.setBackgroundColor(tableRowColor(realRowPosition));
 
                 int size = cacheTableContent.get(realRowPosition).size();
@@ -300,16 +307,15 @@ public class SuperTableLayout extends LinearLayout {
 
 
         // 以下设置表格宽度为真实宽度
-        Utils.getViewSize(TAG, tableTitleLayout, new Utils.MeasureViewSizeCallback() {
+        Utils.getViewSize(TAG, titleContainer, new Utils.MeasureViewSizeCallback() {
 
             @Override
             public void sizeCallback(int width, int height) {
                 ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                layoutParams.width = width;
+                layoutParams.width = (int) (width + itemWidth + getResources().getDimension(R.dimen.statistics_table_divide_line_width) + getResources().getDimension(R.dimen.statistics_table_border_line_width));
                 setLayoutParams(layoutParams);
             }
         });
-
 
 
         tableContentHor.setScrollView(titleHor);
@@ -317,12 +323,16 @@ public class SuperTableLayout extends LinearLayout {
     }
 
     private int tableRowColor(int rowPosition) {
-        if (rowPosition % 2 == 0) {
-            // 偶数行
-            return tableItemColor;
+        if (itemBgPureColor == 0) {
+            if (rowPosition % 2 == 0) {
+                // 偶数行
+                return itemBgIntervalColor2;
+            } else {
+                // 奇数行
+                return itemBgIntervalColor1;
+            }
         } else {
-            // 奇数行
-            return Color.WHITE;
+            return itemBgPureColor;
         }
     }
 
@@ -359,7 +369,7 @@ public class SuperTableLayout extends LinearLayout {
             }
         }
 
-        return listMaxTextWidth + tableItemMargin;
+        return listMaxTextWidth + itemMargin;
     }
 
     private boolean tableContentQualified(List<List<String>> tableContent) {
@@ -395,8 +405,14 @@ public class SuperTableLayout extends LinearLayout {
         addData(null);
     }
 
-    public void setTableItemHeight(int tableItemHeight) {
-        this.tableItemHeight = tableItemHeight;
+    public void setItemHeight(int tableItemHeight) {
+        this.itemHeight = tableItemHeight;
+
+        addData(null);
+    }
+
+    public void setItemMargin(int tableItemMargin) {
+        this.itemMargin = tableItemMargin;
 
         addData(null);
     }

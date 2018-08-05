@@ -7,8 +7,10 @@
     <declare-styleable name="table_layout">
         <attr name="height" format="dimension" />
         <attr name="text_size" format="dimension" />
-        <attr name="table_item_margin" format="dimension" />
-        <attr name="table_item_height" format="dimension" />
-        <attr name="table_item_color" format="color" />
+        <attr name="item_margin" format="dimension" />
+        <attr name="item_height" format="dimension" />
+        <attr name="item_bg_pure_color" format="color" />
+        <attr name="item_bg_interval_color1" format="color" />
+        <attr name="item_bg_interval_color2" format="color" />
     </declare-styleable>
 </resources>
