@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <View
+        android:id="@+id/v_table_title_divide"
         android:layout_width="match_parent"
         android:layout_height="@dimen/statistics_table_border_line_width"
         android:background="@color/statistics_table_border"/>

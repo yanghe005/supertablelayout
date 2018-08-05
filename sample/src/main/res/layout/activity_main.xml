@@ -9,6 +9,8 @@
         android:id="@+id/table_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:height="200dp"
+        app:width="200dp"
         app:item_height="50dp"
         app:text_size="20sp"/>
 
