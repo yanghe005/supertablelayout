@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.hepeng.view.SuperTableLayout;
+import com.hepeng.view.TableBuild;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -66,7 +67,7 @@ public class MainActivity extends Activity {
 //
 //            @Override
 //            public void onClick(View v) {
-//                tableLayout.setItemMargin(100);
+//                new TableBuild().setHeight(100).excute(tableLayout);
 //            }
 //        });
     }

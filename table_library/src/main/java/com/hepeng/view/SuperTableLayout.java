@@ -43,18 +43,7 @@ public class SuperTableLayout extends LinearLayout {
     private SyncHorizontalScrollView tableContentHor;
     private SyncHorizontalScrollView titleHor;
 
-    private List<List<String>> cacheTableContent;
-
-    private float textSize;
-    private int textColor;
-    private int itemWidth, itemHeight;
-    private int itemLeftRightMargin;
-    private int itemBgIntervalColor1, itemBgIntervalColor2;
-    private int tableHeaderBgColor, rowHeaderBgColor;
-    private int itemBgPureColor;
-    private int width, height;
-    private boolean tableHeaderFixed;
-    private TextUtils.TruncateAt itemTextEllipsize = TextUtils.TruncateAt.END;
+    private TableBuild tableBuild;
 
 
     private int start = 1;
@@ -83,71 +72,74 @@ public class SuperTableLayout extends LinearLayout {
         setOrientation(LinearLayout.VERTICAL);
         setLayoutParams(new ViewGroup.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
+        if (tableBuild == null) {
+            tableBuild = new TableBuild();
+        }
         if (attrs != null) {
             TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.table_layout);
-            tableHeaderFixed = ta.getBoolean(R.styleable.table_layout_table_header_fixed, true);
+            tableBuild.tableHeaderFixed = ta.getBoolean(R.styleable.table_layout_table_header_fixed, true);
 
-            width = (int) ta.getDimension(R.styleable.table_layout_width, 0);
-            height = (int) ta.getDimension(R.styleable.table_layout_height, 0);
+            tableBuild.width = (int) ta.getDimension(R.styleable.table_layout_width, 0);
+            tableBuild.height = (int) ta.getDimension(R.styleable.table_layout_height, 0);
 
-            textSize = ta.getDimension(R.styleable.table_layout_text_size, 0);
-            if (textSize == 0) {
-                textSize = (int) getResources().getDimension(R.dimen.table_item_text_size);
+            tableBuild.textSize = ta.getDimension(R.styleable.table_layout_text_size, 0);
+            if (tableBuild.textSize == 0) {
+                tableBuild.textSize = (int) getResources().getDimension(R.dimen.table_item_text_size);
             }
 
-            itemLeftRightMargin = (int) ta.getDimension(R.styleable.table_layout_item_left_right_margin, 0);
-            if (itemLeftRightMargin == 0) {
-                itemLeftRightMargin = (int) getResources().getDimension(R.dimen.table_item_margin);
+            tableBuild.itemLeftRightMargin = (int) ta.getDimension(R.styleable.table_layout_item_left_right_margin, 0);
+            if (tableBuild.itemLeftRightMargin == 0) {
+                tableBuild.itemLeftRightMargin = (int) getResources().getDimension(R.dimen.table_item_margin);
             }
 
-            itemWidth = (int) ta.getDimension(R.styleable.table_layout_item_width, 0);
-            itemHeight = (int) ta.getDimension(R.styleable.table_layout_item_height, 0);
-            if (itemHeight == 0) {
-                itemHeight = (int) getResources().getDimension(R.dimen.table_item_default_height);
+            tableBuild.itemWidth = (int) ta.getDimension(R.styleable.table_layout_item_width, 0);
+            tableBuild.itemHeight = (int) ta.getDimension(R.styleable.table_layout_item_height, 0);
+            if (tableBuild.itemHeight == 0) {
+                tableBuild.itemHeight = (int) getResources().getDimension(R.dimen.table_item_default_height);
             }
 
-            itemBgPureColor = (int) ta.getColor(R.styleable.table_layout_item_bg_pure_color, 0);
+            tableBuild.itemBgPureColor = (int) ta.getColor(R.styleable.table_layout_item_bg_pure_color, 0);
 
             String textEllipsize = ta.getString(R.styleable.table_layout_item_text_ellipsize);
             if (!TextUtils.isEmpty(textEllipsize)) {
                 switch (textEllipsize) {
                     case "start":
-                        itemTextEllipsize = TextUtils.TruncateAt.START;
+                        tableBuild.itemTextEllipsize = TextUtils.TruncateAt.START;
                         break;
                     case "middle":
-                        itemTextEllipsize = TextUtils.TruncateAt.MIDDLE;
+                        tableBuild.itemTextEllipsize = TextUtils.TruncateAt.MIDDLE;
                         break;
                     case "end":
-                        itemTextEllipsize = TextUtils.TruncateAt.END;
+                        tableBuild.itemTextEllipsize = TextUtils.TruncateAt.END;
                         break;
                     case "marquee":
-                        itemTextEllipsize = TextUtils.TruncateAt.MARQUEE;
+                        tableBuild.itemTextEllipsize = TextUtils.TruncateAt.MARQUEE;
                         break;
                     default:
                         break;
                 }
             }
 
-            itemBgIntervalColor1 = ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
-            if (itemBgIntervalColor1 == 0) {
-                itemBgIntervalColor1 = Color.WHITE;
+            tableBuild.itemBgIntervalColor1 = ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
+            if (tableBuild.itemBgIntervalColor1 == 0) {
+                tableBuild.itemBgIntervalColor1 = Color.WHITE;
             }
-            itemBgIntervalColor2 = ta.getColor(R.styleable.table_layout_item_bg_interval_color2, 0);
-            if (itemBgIntervalColor2 == 0) {
-                itemBgIntervalColor2 = Color.parseColor("#fff6f6f6");
+            tableBuild.itemBgIntervalColor2 = ta.getColor(R.styleable.table_layout_item_bg_interval_color2, 0);
+            if (tableBuild.itemBgIntervalColor2 == 0) {
+                tableBuild.itemBgIntervalColor2 = Color.parseColor("#fff6f6f6");
             }
 
-            tableHeaderBgColor = ta.getColor(R.styleable.table_layout_table_header_bg_color, 0);
-            rowHeaderBgColor = ta.getColor(R.styleable.table_layout_row_header_bg_color, 0);
+            tableBuild.tableHeaderBgColor = ta.getColor(R.styleable.table_layout_table_header_bg_color, 0);
+            tableBuild.rowHeaderBgColor = ta.getColor(R.styleable.table_layout_row_header_bg_color, 0);
 
-            textColor = ta.getColor(R.styleable.table_layout_text_color, 0);
-            if (textColor == 0) {
-                textColor = getResources().getColor(R.color.table_title);
+            tableBuild.textColor = ta.getColor(R.styleable.table_layout_text_color, 0);
+            if (tableBuild.textColor == 0) {
+                tableBuild.textColor = getResources().getColor(R.color.table_title);
             }
             ta.recycle();
         }
 
-        if (!tableHeaderFixed) {
+        if (!tableBuild.tableHeaderFixed) {
             findViewById(R.id.v_table_title_divide).setVisibility(View.GONE);
             findViewById(R.id.ll_table_title_layout).setVisibility(View.GONE);
         }
@@ -158,17 +150,17 @@ public class SuperTableLayout extends LinearLayout {
         super.onFinishInflate();
 
         tableContentContainer = findViewById(R.id.lv_table_content_container);
-        if (tableHeaderFixed) {
+        if (tableBuild.tableHeaderFixed) {
             tableTitle = findViewById(R.id.tv_table_title);
             titleContainer = findViewById(R.id.ll_table_title_container);
 
             tableTitleLayout = findViewById(R.id.ll_table_title_layout);
             tableHeaderContainer = findViewById(R.id.lv_table_row_header_container);
-            if (tableHeaderBgColor != 0) {
-                tableTitleLayout.setBackgroundColor(tableHeaderBgColor);
+            if (tableBuild.tableHeaderBgColor != 0) {
+                tableTitleLayout.setBackgroundColor(tableBuild.tableHeaderBgColor);
             }
-            if (rowHeaderBgColor != 0) {
-                tableHeaderContainer.setBackgroundColor(rowHeaderBgColor);
+            if (tableBuild.rowHeaderBgColor != 0) {
+                tableHeaderContainer.setBackgroundColor(tableBuild.rowHeaderBgColor);
             }
         }
 
@@ -182,10 +174,64 @@ public class SuperTableLayout extends LinearLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         setMeasuredDimension(getDefaultSize(0, widthMeasureSpec), getDefaultSize(0, heightMeasureSpec));
 
-        if (height == 0) {
-            height = getMeasuredHeight();
+        if (tableBuild.height == 0) {
+            tableBuild.height = getMeasuredHeight();
         }
-        super.onMeasure(MeasureSpec.makeMeasureSpec(width == 0 ? getMeasuredWidth() : width, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(height == 0 ? getMeasuredHeight() : height, MeasureSpec.EXACTLY));
+        super.onMeasure(MeasureSpec.makeMeasureSpec(tableBuild.width == 0 ? getMeasuredWidth() : tableBuild.width,
+                MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(tableBuild.height == 0 ? getMeasuredHeight() :
+                tableBuild.height, MeasureSpec.EXACTLY));
+    }
+
+    public SuperTableLayout setTableBuild(TableBuild tableBuild) {
+        if (tableBuild == null) {
+            return this;
+        }
+        if (this.tableBuild == null) {
+            this.tableBuild = tableBuild;
+            return this;
+        }
+
+        if (tableBuild.textSize != 0) {
+            this.tableBuild.textSize = tableBuild.textSize;
+        }
+        if (tableBuild.textColor != 0) {
+            this.tableBuild.textColor = tableBuild.textColor;
+        }
+        if (tableBuild.itemWidth != 0) {
+            this.tableBuild.itemWidth = tableBuild.itemWidth;
+        }
+        if (tableBuild.itemHeight != 0) {
+            this.tableBuild.itemHeight = tableBuild.itemHeight;
+        }
+        if (tableBuild.itemLeftRightMargin != 0) {
+            this.tableBuild.itemLeftRightMargin = tableBuild.itemLeftRightMargin;
+        }
+        if (tableBuild.itemBgIntervalColor1 != 0) {
+            this.tableBuild.itemBgIntervalColor1 = tableBuild.itemBgIntervalColor1;
+        }
+        if (tableBuild.itemBgIntervalColor2 != 0) {
+            this.tableBuild.itemBgIntervalColor2 = tableBuild.itemBgIntervalColor2;
+        }
+        if (tableBuild.tableHeaderBgColor != 0) {
+            this.tableBuild.tableHeaderBgColor = tableBuild.tableHeaderBgColor;
+        }
+        if (tableBuild.rowHeaderBgColor != 0) {
+            this.tableBuild.rowHeaderBgColor = tableBuild.rowHeaderBgColor;
+        }
+        if (tableBuild.itemBgPureColor != 0) {
+            this.tableBuild.itemBgPureColor = tableBuild.itemBgPureColor;
+        }
+        if (tableBuild.width != 0) {
+            this.tableBuild.width = tableBuild.width;
+        }
+        if (tableBuild.height != 0) {
+            this.tableBuild.height = tableBuild.height;
+        }
+        if (tableBuild.itemTextEllipsize != null) {
+            this.tableBuild.itemTextEllipsize = tableBuild.itemTextEllipsize;
+        }
+
+        return this;
     }
 
     /**
@@ -193,49 +239,49 @@ public class SuperTableLayout extends LinearLayout {
      */
     public void addData(final List<List<String>> tableContent) {
         if (tableContent != null && tableContent.size() > 0) {
-            cacheTableContent = tableContent;
+            tableBuild.cacheTableContent = tableContent;
         }
 
-        if (!tableContentQualified(cacheTableContent)) {
+        if (!tableContentQualified(tableBuild.cacheTableContent)) {
             return;
         }
 
-        final int itemWidth = getListTextMaxWidth(cacheTableContent, textSize, 0);
+        final int itemWidth = getListTextMaxWidth(tableBuild.cacheTableContent, tableBuild.textSize, 0);
 
-        if (tableHeaderFixed) {
+        if (tableBuild.tableHeaderFixed) {
             // 第一行表头
             // 第一行表头第一个
             tableTitle.setGravity(Gravity.CENTER);
-            tableTitle.setText(cacheTableContent.get(0).get(0));
+            tableTitle.setText(tableBuild.cacheTableContent.get(0).get(0));
             tableTitle.setSingleLine();
-            tableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-            tableTitle.setTextColor(textColor);
-            tableTitle.setEllipsize(itemTextEllipsize);
+            tableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, tableBuild.textSize);
+            tableTitle.setTextColor(tableBuild.textColor);
+            tableTitle.setEllipsize(tableBuild.itemTextEllipsize);
             tableTitle.setBackgroundColor(tableRowColor(0, 0));
             tableTitle.setLayoutParams(new LinearLayout.LayoutParams(itemWidth, LinearLayout.LayoutParams.MATCH_PARENT));
 
 
             // 第一行表头除第一个外其他
             titleContainer.removeAllViews();
-            for (int i = 1; i < cacheTableContent.get(0).size(); i++) {
+            for (int i = 1; i < tableBuild.cacheTableContent.get(0).size(); i++) {
                 TextView tvTableTitle = new TextView(getContext());
                 tvTableTitle.setGravity(Gravity.CENTER);
                 tvTableTitle.setSingleLine();
-                tvTableTitle.setEllipsize(itemTextEllipsize);
-                tvTableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-                tvTableTitle.setTextColor(textColor);
+                tvTableTitle.setEllipsize(tableBuild.itemTextEllipsize);
+                tvTableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, tableBuild.textSize);
+                tvTableTitle.setTextColor(tableBuild.textColor);
                 tvTableTitle.setBackgroundColor(tableRowColor(0, i));
-                String itemName = cacheTableContent.get(0).get(i);
+                String itemName = tableBuild.cacheTableContent.get(0).get(i);
                 if (!TextUtils.isEmpty(itemName)) {
                     tvTableTitle.setText(itemName);
                 }
 
-                LinearLayout.LayoutParams tableTitleParams = new LinearLayout.LayoutParams(getListTextMaxWidth(cacheTableContent, textSize, i), LinearLayout.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams tableTitleParams = new LinearLayout.LayoutParams(getListTextMaxWidth(tableBuild.cacheTableContent, tableBuild.textSize, i), LinearLayout.LayoutParams.MATCH_PARENT);
                 titleContainer.addView(tvTableTitle, tableTitleParams);
 
 
                 int lineColor, lineWidth;
-                if (i == cacheTableContent.get(0).size() - 1) {
+                if (i == tableBuild.cacheTableContent.get(0).size() - 1) {
                     lineColor = getResources().getColor(R.color.table_border);
                     lineWidth = 1;
                 } else {
@@ -248,7 +294,7 @@ public class SuperTableLayout extends LinearLayout {
             }
 
             LinearLayout.LayoutParams titleLayoutParams = (LinearLayout.LayoutParams) tableTitleLayout.getLayoutParams();
-            titleLayoutParams.height = itemHeight;
+            titleLayoutParams.height = tableBuild.itemHeight;
             tableTitleLayout.setLayoutParams(titleLayoutParams);
             // 第一行表头
 
@@ -260,17 +306,17 @@ public class SuperTableLayout extends LinearLayout {
                 public void convert(Context context, TableListViewHolder helper, String item, int pos) {
                     TextView tableTitleItem = helper.getView(R.id.tv_table_title_item);
                     tableTitleItem.setGravity(Gravity.CENTER);
-                    tableTitleItem.setEllipsize(itemTextEllipsize);
-                    tableTitleItem.setTextColor(textColor);
-                    tableTitleItem.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+                    tableTitleItem.setEllipsize(tableBuild.itemTextEllipsize);
+                    tableTitleItem.setTextColor(tableBuild.textColor);
+                    tableTitleItem.setTextSize(TypedValue.COMPLEX_UNIT_PX, tableBuild.textSize);
                     if (!TextUtils.isEmpty(item)) {
                         tableTitleItem.setText(item);
                     }
                     tableTitleItem.setBackgroundColor(tableRowColor(pos + 1, 0));
 
                     AbsListView.LayoutParams tableTitleItemParams = (AbsListView.LayoutParams) tableTitleItem.getLayoutParams();
-                    tableTitleItemParams.width = getListTextMaxWidth(cacheTableContent, textSize, 0);
-                    tableTitleItemParams.height = itemHeight;
+                    tableTitleItemParams.width = getListTextMaxWidth(tableBuild.cacheTableContent, tableBuild.textSize, 0);
+                    tableTitleItemParams.height = tableBuild.itemHeight;
                     tableTitleItem.setLayoutParams(tableTitleItemParams);
                 }
             };
@@ -278,15 +324,15 @@ public class SuperTableLayout extends LinearLayout {
 
 
             List<String> titleItemData = new ArrayList<>();
-            for (int i = 1; i < cacheTableContent.size(); i++) {
-                titleItemData.add(cacheTableContent.get(i).get(0));
+            for (int i = 1; i < tableBuild.cacheTableContent.size(); i++) {
+                titleItemData.add(tableBuild.cacheTableContent.get(i).get(0));
             }
             tableHeaderContainerAdapter.addItemData(titleItemData, true);
             // 第一列
         }
 
 
-        if (!tableHeaderFixed) {
+        if (!tableBuild.tableHeaderFixed) {
             start = 0;
         }
 
@@ -300,22 +346,22 @@ public class SuperTableLayout extends LinearLayout {
                 int realRowPosition = position + start;
 
                 LinearLayout linearLayout = new LinearLayout(context);
-                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, itemHeight));
+                linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, tableBuild.itemHeight));
 
 
-                int size = cacheTableContent.get(realRowPosition).size();
+                int size = tableBuild.cacheTableContent.get(realRowPosition).size();
                 for (int i = start; i < size; i++) {
                     linearLayout.setBackgroundColor(tableRowColor(realRowPosition, i));
 
                     TextView tvTableContent = new TextView(context);
                     tvTableContent.setId(i);
                     tvTableContent.setGravity(Gravity.CENTER);
-                    tvTableContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-                    tvTableContent.setTextColor(textColor);
+                    tvTableContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, tableBuild.textSize);
+                    tvTableContent.setTextColor(tableBuild.textColor);
                     tvTableContent.setSingleLine();
-                    tvTableContent.setEllipsize(itemTextEllipsize);
+                    tvTableContent.setEllipsize(tableBuild.itemTextEllipsize);
 
-                    LinearLayout.LayoutParams tvTableContentParams = new LinearLayout.LayoutParams(getListTextMaxWidth(cacheTableContent, SuperTableLayout.this.textSize, i), LinearLayout.LayoutParams.MATCH_PARENT);
+                    LinearLayout.LayoutParams tvTableContentParams = new LinearLayout.LayoutParams(getListTextMaxWidth(tableBuild.cacheTableContent, tableBuild.textSize, i), LinearLayout.LayoutParams.MATCH_PARENT);
                     tvTableContentParams.gravity = Gravity.CENTER;
                     linearLayout.addView(tvTableContent, tvTableContentParams);
 
@@ -359,8 +405,8 @@ public class SuperTableLayout extends LinearLayout {
         tableContentContainer.setAdapter(tableContentContainerAdapter);
         // 第一行向下，第一列向右
         List<List<String>> list = new ArrayList<>();
-        for (int i = start; i < cacheTableContent.size(); i++) {
-            list.add(cacheTableContent.get(i));
+        for (int i = start; i < tableBuild.cacheTableContent.size(); i++) {
+            list.add(tableBuild.cacheTableContent.get(i));
         }
         tableContentContainerAdapter.addItemData(list, true);
 
@@ -377,35 +423,35 @@ public class SuperTableLayout extends LinearLayout {
         });
 
 
-        if (tableHeaderFixed) {
+        if (tableBuild.tableHeaderFixed) {
             tableContentHor.setScrollView(titleHor);
             titleHor.setScrollView(tableContentHor);
         }
     }
 
     private int tableRowColor(int rowPosition, int columnPosition) {
-        if (rowHeaderBgColor != 0) {
+        if (tableBuild.rowHeaderBgColor != 0) {
             if (columnPosition == 0) {
                 return 0;
             }
         }
-        if (tableHeaderBgColor != 0) {
+        if (tableBuild.tableHeaderBgColor != 0) {
             if (rowPosition == 0) {
                 return 0;
             }
         }
 
 
-        if (itemBgPureColor == 0) {
+        if (tableBuild.itemBgPureColor == 0) {
             if (rowPosition % 2 == 0) {
                 // 偶数行
-                return itemBgIntervalColor2;
+                return tableBuild.itemBgIntervalColor2;
             } else {
                 // 奇数行
-                return itemBgIntervalColor1;
+                return tableBuild.itemBgIntervalColor1;
             }
         } else {
-            return itemBgPureColor;
+            return tableBuild.itemBgPureColor;
         }
     }
 
@@ -417,7 +463,7 @@ public class SuperTableLayout extends LinearLayout {
      * @return 单位px
      */
     private int getListTextMaxWidth(List<List<String>> tableContent, float textSize, int listNo) {
-        if (itemWidth == 0) {
+        if (tableBuild.itemWidth == 0) {
             List<String> listTexts = new ArrayList<>();
             for (List<String> rowData : tableContent) {
                 // 每行有多少数据
@@ -443,9 +489,9 @@ public class SuperTableLayout extends LinearLayout {
                 }
             }
 
-            return listMaxTextWidth + itemLeftRightMargin;
+            return listMaxTextWidth + tableBuild.itemLeftRightMargin;
         } else {
-            return itemWidth;
+            return tableBuild.itemWidth;
         }
     }
 
@@ -470,26 +516,5 @@ public class SuperTableLayout extends LinearLayout {
             lastRowSize = rowList.size();
         }
         return true;
-    }
-
-    /**
-     * @param textSize px作为参数
-     */
-    public void setTextSize(float textSize) {
-        this.textSize = textSize;
-
-        addData(null);
-    }
-
-    public void setItemHeight(int tableItemHeight) {
-        this.itemHeight = tableItemHeight;
-
-        addData(null);
-    }
-
-    public void setItemMargin(int tableItemMargin) {
-        this.itemLeftRightMargin = tableItemMargin;
-
-        addData(null);
     }
 }
