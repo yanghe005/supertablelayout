@@ -11,6 +11,9 @@
         android:layout_height="wrap_content"
         app:height="200dp"
         app:item_height="50dp"
+        app:row_header_bg_color="#9d7777"
+        app:table_header_bg_color="#214444"
+        app:text_color="#78eeee"
         app:text_size="20sp"/>
 
     <!--<Button-->

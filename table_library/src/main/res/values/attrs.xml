@@ -16,7 +16,12 @@
         <attr name="item_bg_pure_color" format="color" />
         <attr name="item_bg_interval_color1" format="color" />
         <attr name="item_bg_interval_color2" format="color" />
+        <attr name="text_color" format="color" />
         <!-- 默认end -->
         <attr name="item_text_ellipsize" format="string" />
+        <!-- 需要固定表头 -->
+        <attr name="table_header_bg_color" format="color" />
+        <!-- 需要固定行头 -->
+        <attr name="row_header_bg_color" format="color" />
     </declare-styleable>
 </resources>

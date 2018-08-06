@@ -46,9 +46,11 @@ public class SuperTableLayout extends LinearLayout {
     private List<List<String>> cacheTableContent;
 
     private float textSize;
+    private int textColor;
     private int itemWidth, itemHeight;
     private int itemLeftRightMargin;
     private int itemBgIntervalColor1, itemBgIntervalColor2;
+    private int tableHeaderBgColor, rowHeaderBgColor;
     private int itemBgPureColor;
     private int width, height;
     private boolean tableHeaderFixed;
@@ -126,17 +128,24 @@ public class SuperTableLayout extends LinearLayout {
                 }
             }
 
-            itemBgIntervalColor1 = (int) ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
+            itemBgIntervalColor1 = ta.getColor(R.styleable.table_layout_item_bg_interval_color1, 0);
             if (itemBgIntervalColor1 == 0) {
                 itemBgIntervalColor1 = Color.WHITE;
             }
-            itemBgIntervalColor2 = (int) ta.getColor(R.styleable.table_layout_item_bg_interval_color2, 0);
+            itemBgIntervalColor2 = ta.getColor(R.styleable.table_layout_item_bg_interval_color2, 0);
             if (itemBgIntervalColor2 == 0) {
                 itemBgIntervalColor2 = Color.parseColor("#fff6f6f6");
             }
+
+            tableHeaderBgColor = ta.getColor(R.styleable.table_layout_table_header_bg_color, 0);
+            rowHeaderBgColor = ta.getColor(R.styleable.table_layout_row_header_bg_color, 0);
+
+            textColor = ta.getColor(R.styleable.table_layout_text_color, 0);
+            if (textColor == 0) {
+                textColor = getResources().getColor(R.color.table_title);
+            }
             ta.recycle();
         }
-
 
         if (!tableHeaderFixed) {
             findViewById(R.id.v_table_title_divide).setVisibility(View.GONE);
@@ -152,9 +161,17 @@ public class SuperTableLayout extends LinearLayout {
         if (tableHeaderFixed) {
             tableTitle = findViewById(R.id.tv_table_title);
             titleContainer = findViewById(R.id.ll_table_title_container);
+
             tableTitleLayout = findViewById(R.id.ll_table_title_layout);
             tableHeaderContainer = findViewById(R.id.lv_table_row_header_container);
+            if (tableHeaderBgColor != 0) {
+                tableTitleLayout.setBackgroundColor(tableHeaderBgColor);
+            }
+            if (rowHeaderBgColor != 0) {
+                tableHeaderContainer.setBackgroundColor(rowHeaderBgColor);
+            }
         }
+
 
         tableContentHor = findViewById(R.id.sv_table_content_hor);
         titleHor = findViewById(R.id.sv_title_hor);
@@ -192,8 +209,9 @@ public class SuperTableLayout extends LinearLayout {
             tableTitle.setText(cacheTableContent.get(0).get(0));
             tableTitle.setSingleLine();
             tableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
+            tableTitle.setTextColor(textColor);
             tableTitle.setEllipsize(itemTextEllipsize);
-            tableTitle.setBackgroundColor(tableRowColor(0));
+            tableTitle.setBackgroundColor(tableRowColor(0, 0));
             tableTitle.setLayoutParams(new LinearLayout.LayoutParams(itemWidth, LinearLayout.LayoutParams.MATCH_PARENT));
 
 
@@ -205,8 +223,8 @@ public class SuperTableLayout extends LinearLayout {
                 tvTableTitle.setSingleLine();
                 tvTableTitle.setEllipsize(itemTextEllipsize);
                 tvTableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-                tvTableTitle.setTextColor(getResources().getColor(R.color.table_title));
-                tvTableTitle.setBackgroundColor(tableRowColor(0));
+                tvTableTitle.setTextColor(textColor);
+                tvTableTitle.setBackgroundColor(tableRowColor(0, i));
                 String itemName = cacheTableContent.get(0).get(i);
                 if (!TextUtils.isEmpty(itemName)) {
                     tvTableTitle.setText(itemName);
@@ -243,11 +261,12 @@ public class SuperTableLayout extends LinearLayout {
                     TextView tableTitleItem = helper.getView(R.id.tv_table_title_item);
                     tableTitleItem.setGravity(Gravity.CENTER);
                     tableTitleItem.setEllipsize(itemTextEllipsize);
+                    tableTitleItem.setTextColor(textColor);
                     tableTitleItem.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
                     if (!TextUtils.isEmpty(item)) {
                         tableTitleItem.setText(item);
                     }
-                    tableTitleItem.setBackgroundColor(tableRowColor(pos + 1));
+                    tableTitleItem.setBackgroundColor(tableRowColor(pos + 1, 0));
 
                     AbsListView.LayoutParams tableTitleItemParams = (AbsListView.LayoutParams) tableTitleItem.getLayoutParams();
                     tableTitleItemParams.width = getListTextMaxWidth(cacheTableContent, textSize, 0);
@@ -282,15 +301,17 @@ public class SuperTableLayout extends LinearLayout {
 
                 LinearLayout linearLayout = new LinearLayout(context);
                 linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, itemHeight));
-                linearLayout.setBackgroundColor(tableRowColor(realRowPosition));
+
 
                 int size = cacheTableContent.get(realRowPosition).size();
                 for (int i = start; i < size; i++) {
+                    linearLayout.setBackgroundColor(tableRowColor(realRowPosition, i));
+
                     TextView tvTableContent = new TextView(context);
                     tvTableContent.setId(i);
                     tvTableContent.setGravity(Gravity.CENTER);
                     tvTableContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, textSize);
-                    tvTableContent.setTextColor(getResources().getColor(R.color.table_title));
+                    tvTableContent.setTextColor(textColor);
                     tvTableContent.setSingleLine();
                     tvTableContent.setEllipsize(itemTextEllipsize);
 
@@ -362,7 +383,19 @@ public class SuperTableLayout extends LinearLayout {
         }
     }
 
-    private int tableRowColor(int rowPosition) {
+    private int tableRowColor(int rowPosition, int columnPosition) {
+        if (rowHeaderBgColor != 0) {
+            if (columnPosition == 0) {
+                return 0;
+            }
+        }
+        if (tableHeaderBgColor != 0) {
+            if (rowPosition == 0) {
+                return 0;
+            }
+        }
+
+
         if (itemBgPureColor == 0) {
             if (rowPosition % 2 == 0) {
                 // 偶数行
