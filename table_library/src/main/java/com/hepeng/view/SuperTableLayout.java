@@ -20,6 +20,7 @@ import com.hepeng.R;
 import com.hepeng.adapter.TableListAdapter;
 import com.hepeng.adapter.TableListViewHolder;
 import com.hepeng.common.DensityUtils;
+import com.hepeng.common.ScreenSizeUtils;
 import com.hepeng.common.Utils;
 
 import java.util.ArrayList;
@@ -416,8 +417,14 @@ public class SuperTableLayout extends LinearLayout {
 
             @Override
             public void sizeCallback(int width, int height) {
+                int realWidth = (int) (width + itemWidth + getResources().getDimension(R.dimen.table_divide_line_width) + getResources().getDimension(R.dimen.table_border_line_width));
+
+                int screenWidth = ScreenSizeUtils.getInstance(getContext()).getScreenWidth();
+                if (realWidth > screenWidth) {
+                    realWidth = screenWidth;
+                }
                 ViewGroup.LayoutParams layoutParams = getLayoutParams();
-                layoutParams.width = (int) (width + itemWidth + getResources().getDimension(R.dimen.table_divide_line_width) + getResources().getDimension(R.dimen.table_border_line_width));
+                layoutParams.width = realWidth;
                 setLayoutParams(layoutParams);
             }
         });
