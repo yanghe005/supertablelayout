@@ -23,5 +23,8 @@
         <attr name="table_header_bg_color" format="color" />
         <!-- 需要固定行头 -->
         <attr name="row_header_bg_color" format="color" />
+        <!-- 行合并设置(第一列(行头)和其他列不支持合并) -->
+        <!-- 每组设置使用;进行分割，每组之中使用|进行行数和列数分割，列数中使用,进行分割(第一行和第一列均从0作为起点)  例如第2行合并3-5单元格和第4行合并1-2单元 1|2,4;3|0,1 -->
+        <attr name="row_item_merge_index" format="string" />
     </declare-styleable>
 </resources>

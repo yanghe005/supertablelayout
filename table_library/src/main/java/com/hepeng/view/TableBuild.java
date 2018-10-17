@@ -11,8 +11,6 @@ import java.util.List;
  * @email yanghp@91power.com
  */
 public class TableBuild {
-    List<List<String>> cacheTableContent;
-
     float textSize;
     int textColor;
     int itemWidth, itemHeight;
@@ -22,12 +20,8 @@ public class TableBuild {
     int itemBgPureColor;
     int width, height;
     boolean tableHeaderFixed;
+    String rowItemMergeIndex;
     TextUtils.TruncateAt itemTextEllipsize = TextUtils.TruncateAt.END;
-
-    public TableBuild setCacheTableContent(List<List<String>> cacheTableContent) {
-        this.cacheTableContent = cacheTableContent;
-        return this;
-    }
 
     public TableBuild setTextSize(float textSize) {
         this.textSize = textSize;
@@ -94,7 +88,12 @@ public class TableBuild {
         return this;
     }
 
+    public TableBuild setRowItemMergeIndex(String rowItemMergeIndex) {
+        this.rowItemMergeIndex = rowItemMergeIndex;
+        return this;
+    }
+
     public void excute(SuperTableLayout tableLayout) {
-        tableLayout.setTableBuild(this).addData(cacheTableContent);
+        tableLayout.setTableBuild(this);
     }
 }

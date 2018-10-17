@@ -46,8 +46,8 @@ public class SuperTableLayout extends LinearLayout {
 
     private TableBuild tableBuild;
 
-
-    private int start = 1;
+    // line是列
+    private int rowStart = 1, lineStart = 1;
 
     public SuperTableLayout(Context context) {
         super(context);
@@ -104,7 +104,7 @@ public class SuperTableLayout extends LinearLayout {
             String textEllipsize = ta.getString(R.styleable.table_layout_item_text_ellipsize);
             if (!TextUtils.isEmpty(textEllipsize)) {
                 switch (textEllipsize) {
-                    case "start":
+                    case "rowStart":
                         tableBuild.itemTextEllipsize = TextUtils.TruncateAt.START;
                         break;
                     case "middle":
@@ -137,6 +137,8 @@ public class SuperTableLayout extends LinearLayout {
             if (tableBuild.textColor == 0) {
                 tableBuild.textColor = getResources().getColor(R.color.table_title);
             }
+
+            tableBuild.rowItemMergeIndex = ta.getString(R.styleable.table_layout_row_item_merge_index);
             ta.recycle();
         }
 
@@ -239,21 +241,17 @@ public class SuperTableLayout extends LinearLayout {
      * @param tableContent 最外层list是表格有几行数据，内层list是每行有多少数据
      */
     public void addData(final List<List<String>> tableContent) {
-        if (tableContent != null && tableContent.size() > 0) {
-            tableBuild.cacheTableContent = tableContent;
-        }
-
-        if (!tableContentQualified(tableBuild.cacheTableContent)) {
+        if (!tableContentQualified(tableContent)) {
             return;
         }
 
-        final int itemWidth = getListTextMaxWidth(tableBuild.cacheTableContent, tableBuild.textSize, 0);
+        final int itemWidth = getListTextMaxWidth(tableContent, tableBuild.textSize, 0);
 
         if (tableBuild.tableHeaderFixed) {
             // 第一行表头
             // 第一行表头第一个
             tableTitle.setGravity(Gravity.CENTER);
-            tableTitle.setText(tableBuild.cacheTableContent.get(0).get(0));
+            tableTitle.setText(tableContent.get(0).get(0));
             tableTitle.setSingleLine();
             tableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, tableBuild.textSize);
             tableTitle.setTextColor(tableBuild.textColor);
@@ -264,7 +262,7 @@ public class SuperTableLayout extends LinearLayout {
 
             // 第一行表头除第一个外其他
             titleContainer.removeAllViews();
-            for (int i = 1; i < tableBuild.cacheTableContent.get(0).size(); i++) {
+            for (int i = 1; i < tableContent.get(0).size(); i++) {
                 TextView tvTableTitle = new TextView(getContext());
                 tvTableTitle.setGravity(Gravity.CENTER);
                 tvTableTitle.setSingleLine();
@@ -272,17 +270,17 @@ public class SuperTableLayout extends LinearLayout {
                 tvTableTitle.setTextSize(TypedValue.COMPLEX_UNIT_PX, tableBuild.textSize);
                 tvTableTitle.setTextColor(tableBuild.textColor);
                 tvTableTitle.setBackgroundColor(tableRowColor(0, i));
-                String itemName = tableBuild.cacheTableContent.get(0).get(i);
+                String itemName = tableContent.get(0).get(i);
                 if (!TextUtils.isEmpty(itemName)) {
                     tvTableTitle.setText(itemName);
                 }
 
-                LinearLayout.LayoutParams tableTitleParams = new LinearLayout.LayoutParams(getListTextMaxWidth(tableBuild.cacheTableContent, tableBuild.textSize, i), LinearLayout.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams tableTitleParams = new LinearLayout.LayoutParams(getListTextMaxWidth(tableContent, tableBuild.textSize, i), LinearLayout.LayoutParams.MATCH_PARENT);
                 titleContainer.addView(tvTableTitle, tableTitleParams);
 
 
                 int lineColor, lineWidth;
-                if (i == tableBuild.cacheTableContent.get(0).size() - 1) {
+                if (i == tableContent.get(0).size() - 1) {
                     lineColor = getResources().getColor(R.color.table_border);
                     lineWidth = 1;
                 } else {
@@ -316,7 +314,7 @@ public class SuperTableLayout extends LinearLayout {
                     tableTitleItem.setBackgroundColor(tableRowColor(pos + 1, 0));
 
                     AbsListView.LayoutParams tableTitleItemParams = (AbsListView.LayoutParams) tableTitleItem.getLayoutParams();
-                    tableTitleItemParams.width = getListTextMaxWidth(tableBuild.cacheTableContent, tableBuild.textSize, 0);
+                    tableTitleItemParams.width = getListTextMaxWidth(tableContent, tableBuild.textSize, 0);
                     tableTitleItemParams.height = tableBuild.itemHeight;
                     tableTitleItem.setLayoutParams(tableTitleItemParams);
                 }
@@ -325,8 +323,8 @@ public class SuperTableLayout extends LinearLayout {
 
 
             List<String> titleItemData = new ArrayList<>();
-            for (int i = 1; i < tableBuild.cacheTableContent.size(); i++) {
-                titleItemData.add(tableBuild.cacheTableContent.get(i).get(0));
+            for (int i = 1; i < tableContent.size(); i++) {
+                titleItemData.add(tableContent.get(i).get(0));
             }
             tableHeaderContainerAdapter.addItemData(titleItemData, true);
             // 第一列
@@ -334,57 +332,107 @@ public class SuperTableLayout extends LinearLayout {
 
 
         if (!tableBuild.tableHeaderFixed) {
-            start = 0;
+            rowStart = 0;
         }
 
+        String[] rowItemMergeIndex = null;
+        if (!TextUtils.isEmpty(tableBuild.rowItemMergeIndex)) {
+            rowItemMergeIndex = tableBuild.rowItemMergeIndex.split(";");
+        }
+        final String[] finalRowItemMergeIndex = rowItemMergeIndex;
 
         // 第一行向下，第一列向右
         TableListAdapter<List<String>> tableContentContainerAdapter = new TableListAdapter<List<String>>(getContext(), new TableListAdapter.CreateViewHolder() {
 
             @SuppressLint("ResourceType")
             @Override
-            public ViewGroup createView(Context context, int position, ViewGroup parent) {
-                int realRowPosition = position + start;
+            public ViewGroup createView(Context context, int rowPosition, ViewGroup parent) {
+                int realRowPosition = rowPosition + rowStart;
 
                 LinearLayout linearLayout = new LinearLayout(context);
                 linearLayout.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, tableBuild.itemHeight));
 
+                String[] itemIndex = null;
+                if (finalRowItemMergeIndex != null) {
+                    for (String rowItemMerge : finalRowItemMergeIndex) {
+                        String[] rowIndex = rowItemMerge.split("\\|");// 列和行index分割
+                        if (TextUtils.equals(String.valueOf(realRowPosition), rowIndex[0])) {
+                            itemIndex = rowIndex[1].split(",");// 行index分割
+                        }
+                    }
+                }
 
-                int size = tableBuild.cacheTableContent.get(realRowPosition).size();
-                for (int i = start; i < size; i++) {
-                    linearLayout.setBackgroundColor(tableRowColor(realRowPosition, i));
+                int mergeTableNum = 0;
+                int size = tableContent.get(realRowPosition).size();
+                if (itemIndex != null) {
+                    mergeTableNum = Integer.valueOf(itemIndex[1]) - Integer.valueOf(itemIndex[0]);
+                    size += mergeTableNum;
+                }
 
-                    TextView tvTableContent = new TextView(context);
-                    tvTableContent.setId(i);
-                    tvTableContent.setGravity(Gravity.CENTER);
-                    tvTableContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, tableBuild.textSize);
-                    tvTableContent.setTextColor(tableBuild.textColor);
-                    tvTableContent.setSingleLine();
-                    tvTableContent.setEllipsize(tableBuild.itemTextEllipsize);
-
-                    LinearLayout.LayoutParams tvTableContentParams = new LinearLayout.LayoutParams(getListTextMaxWidth(tableBuild.cacheTableContent, tableBuild.textSize, i), LinearLayout.LayoutParams.MATCH_PARENT);
-                    tvTableContentParams.gravity = Gravity.CENTER;
-                    linearLayout.addView(tvTableContent, tvTableContentParams);
-
-
+                int tableNum = lineStart;
+                for (int realLinePosition = lineStart; realLinePosition < size; realLinePosition++) {
                     int lineColor, lineWidth;
-                    if (i == size - 1) {
+                    if (realLinePosition == size - 1) {
                         lineColor = getResources().getColor(R.color.table_border);
                         lineWidth = 1;
                     } else {
                         lineColor = getResources().getColor(R.color.table_divide);
                         lineWidth = DensityUtils.dp2px(getContext(), 1);
                     }
-                    View tvTableContentEndLine = new View(context);
-                    tvTableContentEndLine.setBackgroundColor(lineColor);
-                    linearLayout.addView(tvTableContentEndLine, new LinearLayout.LayoutParams(lineWidth, LinearLayout.LayoutParams.MATCH_PARENT));
+
+
+                    int textWidth = getListTextMaxWidth(tableContent, tableBuild.textSize, realLinePosition);
+                    int mergeItemType = 0;
+                    if (itemIndex == null) {
+                        // 没有合并表格设置
+                    } else {
+                        // 有合并表格设置
+                        if (realLinePosition == Integer.valueOf(itemIndex[0])) {
+                            // 达到需要合并表格设置的位置
+                            mergeItemType = 1;
+
+                            // TODO:如果合并数据的表格对应其他行相应数据长度不同 则这样计算宽度不对
+                            textWidth *= mergeTableNum + 1;
+                            textWidth += lineWidth * mergeTableNum + 1;
+                        } else if (realLinePosition > Integer.valueOf(itemIndex[0]) && realLinePosition < Integer.valueOf(itemIndex[1])) {
+                            // 达到需要合并表格设置的位置中间
+                            mergeItemType = 2;
+                        } else if (realLinePosition == Integer.valueOf(itemIndex[1])) {
+                            mergeItemType = 3;
+                        }
+                        // 小于合并表格设置和大于合并表格设置则mergeItemType = 0;
+                    }
+
+
+                    if (mergeItemType == 0 || mergeItemType == 1) {
+                        TextView tvTableContent = new TextView(context);
+                        tvTableContent.setId(tableNum);
+                        tvTableContent.setGravity(Gravity.CENTER);
+                        tvTableContent.setTextSize(TypedValue.COMPLEX_UNIT_PX, tableBuild.textSize);
+                        tvTableContent.setTextColor(tableBuild.textColor);
+                        tvTableContent.setSingleLine();
+                        tvTableContent.setEllipsize(tableBuild.itemTextEllipsize);
+
+                        LinearLayout.LayoutParams tvTableContentParams = new LinearLayout.LayoutParams(textWidth, LinearLayout.LayoutParams.MATCH_PARENT);
+                        tvTableContentParams.gravity = Gravity.CENTER;
+                        linearLayout.addView(tvTableContent, tvTableContentParams);
+
+                        linearLayout.setBackgroundColor(tableRowColor(realRowPosition, realLinePosition));
+                        tableNum++;
+                    }
+
+                    if (mergeItemType == 0 || mergeItemType == 3) {
+                        View tvTableContentEndLine = new View(context);
+                        tvTableContentEndLine.setBackgroundColor(lineColor);
+                        linearLayout.addView(tvTableContentEndLine, new LinearLayout.LayoutParams(lineWidth, LinearLayout.LayoutParams.MATCH_PARENT));
+                    }
                 }
                 return linearLayout;
             }
         }) {
 
             @Override
-            public void convert(Context context, TableListViewHolder helper, List<String> item, int pos) {
+            public void convert(Context context, TableListViewHolder helper, List<String> item, int position) {
                 ViewGroup viewGroup;
                 if (helper.getConvertView() instanceof ViewGroup) {
                     viewGroup = (ViewGroup) helper.getConvertView();
@@ -392,12 +440,12 @@ public class SuperTableLayout extends LinearLayout {
                     return;
                 }
 
-                for (int i = start; i < item.size(); i++) {
+                for (int i = lineStart; i < item.size(); i++) {
                     @SuppressLint("ResourceType")
                     TextView tvTableContent = viewGroup.findViewById(i);
 
                     String text = item.get(i);
-                    if (!TextUtils.isEmpty(text)) {
+                    if (tvTableContent != null && !TextUtils.isEmpty(text)) {
                         tvTableContent.setText(text);
                     }
                 }
@@ -406,14 +454,14 @@ public class SuperTableLayout extends LinearLayout {
         tableContentContainer.setAdapter(tableContentContainerAdapter);
         // 第一行向下，第一列向右
         List<List<String>> list = new ArrayList<>();
-        for (int i = start; i < tableBuild.cacheTableContent.size(); i++) {
-            list.add(tableBuild.cacheTableContent.get(i));
+        for (int i = rowStart; i < tableContent.size(); i++) {
+            list.add(tableContent.get(i));
         }
         tableContentContainerAdapter.addItemData(list, true);
 
 
         // 以下设置表格宽度为真实宽度
-        Utils.getViewSize(TAG, tableContentContainer, new Utils.MeasureViewSizeCallback() {
+        Utils.getViewSize(TAG, titleContainer, new Utils.MeasureViewSizeCallback() {
 
             @Override
             public void sizeCallback(int width, int height) {
@@ -507,6 +555,23 @@ public class SuperTableLayout extends LinearLayout {
             Log.e(TAG, "表数据为空");
             return false;
         }
+        String[] rowItemMergeIndex = null;
+        if (!TextUtils.isEmpty(tableBuild.rowItemMergeIndex)) {
+            rowItemMergeIndex = tableBuild.rowItemMergeIndex.split(";");
+            for (String rowItemMerge : rowItemMergeIndex) {
+                String[] rowIndex = rowItemMerge.split("\\|");// 列和行index分割
+                if (Integer.valueOf(rowIndex[0]) > tableContent.size()) {
+                    Log.e(TAG, "表合并数据行坐标大于数据总行数");
+                    return false;
+                }
+
+                String[] itemIndex = rowIndex[1].split(",");// 行index分割
+                if (Integer.valueOf(itemIndex[0]) >= Integer.valueOf(itemIndex[1])) {
+                    Log.e(TAG, "表合并数据列上坐标大或等于列下坐标");
+                    return false;
+                }
+            }
+        }
 
         int lastRowSize = 0;
         for (int i = 0; i < tableContent.size(); i++) {
@@ -516,11 +581,23 @@ public class SuperTableLayout extends LinearLayout {
                 return false;
             }
 
+            boolean breakData = false;
             if (lastRowSize != 0 && lastRowSize != rowList.size()) {
-                Log.e(TAG, "第" + (i + 1) + "行表数据数量与其他行不同");
-                return false;
+                if (rowItemMergeIndex != null) {
+                    for (String rowItemMerge : rowItemMergeIndex) {
+                        String[] rowIndex = rowItemMerge.split("\\|");// 列和行index分割
+                        if (Integer.valueOf(rowIndex[0]) == i) {
+                            breakData = true;
+                        } else {
+                            Log.e(TAG, "第" + (i + 1) + "行表数据数量与其他行不同");
+                            return false;
+                        }
+                    }
+                }
             }
-            lastRowSize = rowList.size();
+            if (!breakData) {
+                lastRowSize = rowList.size();
+            }
         }
         return true;
     }

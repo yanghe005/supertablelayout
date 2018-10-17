@@ -31,8 +31,8 @@ public class MainActivity extends Activity {
         List<String> rowlist2 = new ArrayList<>();
         rowlist2.add("第二行1");
         rowlist2.add("第二行2");
-        rowlist2.add("第二行3");
-        rowlist2.add("第二行4");
+//        rowlist2.add("第二行3");
+//        rowlist2.add("第二行4");
         rowlist2.add("第二行5");
         rowlist2.add("第二行6");
         list.add(rowlist2);
