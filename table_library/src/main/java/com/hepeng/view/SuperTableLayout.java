@@ -391,9 +391,10 @@ public class SuperTableLayout extends LinearLayout {
                             // 达到需要合并表格设置的位置
                             mergeItemType = 1;
 
-                            // TODO:如果合并数据的表格对应其他行相应数据长度不同 则这样计算宽度不对
-                            textWidth *= mergeTableNum + 1;
-                            textWidth += lineWidth * mergeTableNum + 1;
+                            for (int i = realLinePosition + 1; i < realLinePosition + mergeTableNum + 1; i++) {
+                                textWidth += getListTextMaxWidth(tableContent, tableBuild.textSize, i);
+                            }
+                            textWidth += lineWidth * mergeTableNum;
                         } else if (realLinePosition > Integer.valueOf(itemIndex[0]) && realLinePosition < Integer.valueOf(itemIndex[1])) {
                             // 达到需要合并表格设置的位置中间
                             mergeItemType = 2;
